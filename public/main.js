@@ -18,6 +18,7 @@ $(function () {
   var $loginButton = $('#login')
   var $onlineList = $('.onlineList')
   var $onlineTitle = $('.onlineTitle')
+  var $userRadio = $('.userRadio')
   // Prompt for setting a username
   var username, touser = 'all'
   var connected = false
@@ -25,16 +26,6 @@ $(function () {
   var lastTypingTime
   var $currentInput = $usernameInput.focus()
   var socket = io()
-  //提示在线用户
-  function addParticipantsMessage(data) {
-    var message = ''
-    if (data.numUsers === 1) {
-      message += "there's 1 participant"
-    } else {
-      message += "there are " + data.numUsers + " participants"
-    }
-    log(message)
-  }
   //注册事件
   function register() {
     username = cleanInput($usernameInput.val().trim())
@@ -67,8 +58,8 @@ $(function () {
       })
       // tell server to execute 'new message' and send along one parameter
       socket.emit('msg', {
-        content: message,
-        fromuser: username,
+        message,
+        username,
         touser,
         time: Date.now()
       })
@@ -211,11 +202,11 @@ $(function () {
     updateTyping()
   })
   //点击事件
-
+  //注册按钮
   $registerButton.click(function () {
     register()
   })
-
+  //登录按钮
   $loginButton.click(function () {
     login()
   })
@@ -231,6 +222,7 @@ $(function () {
       $loginPage.fadeOut()
       $chatPage.show()
       $currentInput = $inputMessage.focus()
+      connected = true
     } else {
       alert(res.msg)
     }
@@ -247,31 +239,42 @@ $(function () {
       log(message, {
         prepend: true
       })
-      addParticipantsMessage(data)
     } else {
       alert(data.msg)
     }
   })
   //在线用户
   socket.on('userOnline', function (data) {
+    $onlineList.empty()
+    $onlineTitle = $('<li class="onlineTitle"/>')
     $onlineTitle.html(data.length + '人在线')
+    $onlineList.append($onlineTitle)
+    for (var i = 0; i < data.length; i++) {
+      if (data[i] !== username) {
+        var $userDiv = $('<div class="user"/>')
+        var $userRadio = $('<input type="radio" name="userOnline">')
+          .attr("id", data[i]).attr("value", data[i])
+        var $userlabel = $('<label/>').attr("for", data[i]).text(data[i])
+        $userDiv.append($userRadio)
+        $userDiv.append($userlabel)
+        $onlineList.append($userDiv)
+      }
+    }
   })
 
   // Whenever the server emits 'new message', update the chat body
-  socket.on('new message', function (data) {
+  socket.on('msg', function (data) {
     addChatMessage(data)
   })
 
   // Whenever the server emits 'user joined', log it in the chat body
   socket.on('user joined', function (data) {
     log(data.username + ' joined')
-    addParticipantsMessage(data)
   })
 
   // Whenever the server emits 'user left', log it in the chat body
   socket.on('user left', function (data) {
     log(data.username + ' left')
-    addParticipantsMessage(data)
     removeChatTyping(data)
   })
 

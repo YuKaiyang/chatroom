@@ -27,7 +27,14 @@ MongoClient.connect(url, function (err, db) {
         socket.emit('register', { msg: '用户名已存在' })
       } else {
         userDB.insertOne({ username, password })
+        socket.name = username
+        userOnline.set(username, socket)
         socket.emit('register', { type: 'success', msg: '注册成功' })
+        const userList = []
+        for (let key of userOnline.keys()) {
+          userList.push(key)
+        }
+        io.emit('userOnline', userList)
       }
     })
     //用户登录
@@ -43,7 +50,7 @@ MongoClient.connect(url, function (err, db) {
         for (let key of userOnline.keys()) {
           userList.push(key)
         }
-        socket.emit('userOnline', userList)
+        io.emit('userOnline', userList)
       }
       //如果对应的数据不存在数据库中
       else if (userInfo === undefined) {
@@ -55,6 +62,18 @@ MongoClient.connect(url, function (err, db) {
     //用户离开
     socket.on('disconnect', () => {
       userOnline.delete(socket.name)
+      const userList = []
+      for (let key of userOnline.keys()) {
+        userList.push(key)
+      }
+      io.emit('userOnline', userList)
+    })
+    //接收和发送消息
+    socket.on('msg', async (data) => {
+      const { message, username, touser, time } = data
+      if (touser === 'all') {
+        socket.broadcast.emit('msg', data)
+      }
     })
   })
   /*   db.close(); */
