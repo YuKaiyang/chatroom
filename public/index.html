@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>网络聊天室</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="/socket.io/socket.io.js"></script>
+  <link rel="stylesheet" type="text/css" href="themes/default/easyui.css">
+  <link rel="stylesheet" type="text/css" href="themes/icon.css">
+  <script type="text/javascript" src="jquery.min.js"></script>
+  <script type="text/javascript" src="jquery.easyui.min.js"></script>
+</head>
+
+<body>
+  <ul class="pages">
+    <li class="chat page">
+      <div style="margin:20px 0 10px 0;"></div>
+      <div class="easyui-tabs" style="width:70%;height:600px">
+        <div title="公共" style="padding:10px">
+          <div class="chatArea">
+            <ul class="messages"></ul>
+          </div>
+          <input class="inputMessage" placeholder="Type here..." />
+        </div>
+      </div>
+      <ul class="onlineList">
+      <li class="onlineTitle">在线用户</li>
+      </ul>
+    </li>
+    <li class="login page">
+      <div class="form">
+        <div class="easyui-panel" title="Login to system" style="width:100%;max-width:400px;padding:30px 60px;">
+          <div style="margin-bottom:10px">
+            <input id="usernameInput" class="easyui-textbox" style="width:100%;height:40px;padding:12px" data-options="prompt:'Username',iconCls:'icon-man',iconWidth:38">
+          </div>
+          <div style="margin-bottom:20px">
+            <input id="passwordInput" class="easyui-textbox" type="password" style="width:100%;height:40px;padding:12px" data-options="prompt:'Password',iconCls:'icon-lock',iconWidth:38">
+          </div>
+          <div>
+            <a href="#" id="register" class="easyui-linkbutton" data-options="iconCls:'icon-ok'" style="padding:5px 0px;width:35%;float:left;">
+                  <span style="font-size:14px;">注册</span>
+              </a>
+            <a href="#" id="login" class="easyui-linkbutton" data-options="iconCls:'icon-ok'" style="padding:5px 0px;width:35%;float:right;">
+                <span style="font-size:14px;">登录</span>
+            </a>
+          </div>
+        </div>
+    </li>
+  </ul>
+  <script src="/main.js"></script>
+</body>
+
+</html>
